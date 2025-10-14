@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using BrendensFuntimeApp.core;
@@ -48,8 +49,10 @@ namespace BrendensFuntimeApp.ViewModel
                 NibbleViewModel nibble = new NibbleViewModel((byte)((i)*4)); // Multiply nibble number by 4 to get starting bit position
 
                 Nibbles.Insert(0, nibble); // insert at the front so the front-most nibble is 15
-
-                nibble.BitChanged += NibbleChanged; // When a BitChanged is invoked in NibbleViewModel, call NibbleChanged
+                foreach (var bitViewModel in nibble.Bits)
+                {
+                    bitViewModel.PropertyChanged += Bit_PropertyChanged;
+                }
             }
         }
 
@@ -57,9 +60,13 @@ namespace BrendensFuntimeApp.ViewModel
         private long _decimalValue = 0;
         private string _hexValue = "0";
 
-        private void NibbleChanged(object sender, BitViewModel bit)
+        private void Bit_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            UpdateCalculator(bit);
+            if (e.PropertyName == nameof(BitViewModel.BitValue))
+            {
+                BitViewModel bit = (BitViewModel)sender;
+                UpdateCalculator(bit);
+            }
         }
 
         private void UpdateCalculator(BitViewModel bit)

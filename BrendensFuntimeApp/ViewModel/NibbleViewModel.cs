@@ -53,7 +53,6 @@ namespace BrendensFuntimeApp.core
                 BitViewModel bit = new BitViewModel((byte)(startingBitPosition + i));
 
                 Bits.Insert(0, bit); // insert at the front so the front-most bit is SBP + 3
-                bit.PropertyChanged += Bit_PropertyChanged;
             }
         }
 
@@ -62,14 +61,5 @@ namespace BrendensFuntimeApp.core
         private ObservableCollection<BitViewModel> _bits;
         private byte _startingBitPosition;
         private byte _nibbleValue;
-
-        private void Bit_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(BitViewModel.BitValue))
-            {
-                BitViewModel bit = (BitViewModel)sender;
-                BitChanged?.Invoke(this, bit);
-            }
-        }
     }
 }
