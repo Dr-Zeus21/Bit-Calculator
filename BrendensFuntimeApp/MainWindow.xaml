@@ -1,0 +1,110 @@
+﻿<Window x:Class="BrendensFuntimeApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:core="clr-namespace:BrendensFuntimeApp.core"
+        xmlns:view="clr-namespace:BrendensFuntimeApp.View"
+        mc:Ignorable="d"
+        Title="Calc (Short for Calculator)" 
+        Height="555" 
+        Width="485"
+        Background="Transparent">
+
+    <Border Background="#FF18183E">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0"
+                    Background="#FF0D0D20"
+                    Margin="0,0,0,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Text="Hex"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Stretch"
+                               Foreground="White"
+                               FontSize="18"
+                               Margin="20,0,0,0"/>
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding HexValue, UpdateSourceTrigger=PropertyChanged}"
+                             CharacterCasing="Upper"
+                             MaxLength="16"
+                             PreviewTextInput="HexTextBox_PreviewTextInput"
+                             PreviewKeyDown="TextBox_PreviewKeyDown"
+                             DataObject.Pasting="HexTextBox_Pasting"
+                             PreviewMouseDown="TextBox_PreviewMouseDown"
+                             Loaded="TextBox_Loaded"
+                             LostFocus="TextBox_LostFocus"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Stretch"
+                             Foreground="White"
+                             Margin="20 0"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             FontSize="28" 
+                             TextAlignment="Right"/>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="1"
+                    Background="#FF0D0D20"
+                    Margin="0,0,0,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Text="Dec"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Foreground="White"
+                               FontSize="18"
+                               Margin="20,0,0,0"/>
+
+                    <TextBox Grid.Column="1"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Stretch"
+                             Loaded="TextBox_Loaded"
+                             LostFocus="TextBox_LostFocus"
+                             Foreground="White"
+                             Margin="20 0"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             FontSize="28" 
+                             TextAlignment="Right"
+                             PreviewTextInput="DecTextBox_PreviewTextInput"
+                             PreviewKeyDown="TextBox_PreviewKeyDown"
+                             DataObject.Pasting="DecTextBox_Pasting"
+                             PreviewMouseDown="TextBox_PreviewMouseDown"
+                             Text="{Binding DecimalValue}"/>
+                </Grid>
+            </Border>
+
+            <ItemsControl Grid.Row="2" 
+                          ItemsSource="{Binding Nibbles}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <view:NibbleView/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Grid>
+    </Border>
+</Window>
