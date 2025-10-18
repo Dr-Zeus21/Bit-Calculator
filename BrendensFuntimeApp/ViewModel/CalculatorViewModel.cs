@@ -27,6 +27,16 @@ namespace BrendensFuntimeApp.ViewModel
             {
                 _decimalValue = value;
                 OnPropertyChanged();
+
+                if (!_updatingBit && !_updatingHex)
+                {
+                    _updatingDecimal = true;
+
+                    HexValue = DecimalValue.ToString("X");
+                    UpdateBits();
+
+                    _updatingDecimal = false;
+                }
             }
         }
 
@@ -37,7 +47,29 @@ namespace BrendensFuntimeApp.ViewModel
             {
                 _hexValue = value;
                 OnPropertyChanged();
-            }
+
+                if (!_updatingBit && !_updatingDecimal && _hexValue.Length != 0)
+                {
+                    _updatingHex = true;
+
+                    // Have to get a little funky to convert to signed decimal
+                    ulong unsignedValue = Convert.ToUInt64(_hexValue, 16);
+                    ulong signMask = 1UL << 63; // Using this to check if the 64th bit is 1 or 0
+
+                    if ((unsignedValue & signMask) == 0) // is this a positive number?
+                    {
+                        DecimalValue = (long)unsignedValue;
+                    }
+                    else
+                    {
+                        DecimalValue = unchecked((long)(unsignedValue - (1UL << 63) - (1UL << 63)));
+                    }
+
+                    UpdateBits();
+
+                    _updatingHex = false;
+                }
+        }
         }
 
         public CalculatorViewModel()
@@ -49,7 +81,7 @@ namespace BrendensFuntimeApp.ViewModel
                 NibbleViewModel nibble = new NibbleViewModel((byte)((i)*4)); // Multiply nibble number by 4 to get starting bit position
 
                 Nibbles.Insert(0, nibble); // insert at the front so the front-most nibble is 15
-                foreach (var bitViewModel in nibble.Bits)
+                foreach (BitViewModel bitViewModel in nibble.Bits)
                 {
                     bitViewModel.PropertyChanged += Bit_PropertyChanged;
                 }
@@ -60,35 +92,60 @@ namespace BrendensFuntimeApp.ViewModel
         private long _decimalValue = 0;
         private string _hexValue = "0";
 
+        // block execution of other input while using one type of input
+        private bool _updatingBit = false;
+        private bool _updatingDecimal = false;
+        private bool _updatingHex = false;
+
         private void Bit_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(BitViewModel.BitValue))
             {
                 BitViewModel bit = (BitViewModel)sender;
-                UpdateCalculator(bit);
+                UpdateOutputs(bit);
             }
         }
 
-        private void UpdateCalculator(BitViewModel bit)
+        private void UpdateOutputs(BitViewModel bit)
         {
-            long inputValue = 1;
-
-            // last bit is negative, so turning it on adds a negative and turing it off adds a positive
-            if (bit.BitPosition == 63) 
+            if (!_updatingDecimal && !_updatingHex)
             {
-                inputValue *= -1;
-            }
+                long inputValue = 1;
 
-            // if turing off the bit
-            if (bit.BitValue == false)
+                // last bit is negative, so turning it on adds a negative and turing it off adds a positive
+                if (bit.BitPosition == 63)
+                {
+                    inputValue *= -1;
+                }
+
+                // if turing off the bit
+                if (bit.BitValue == false)
+                {
+                    inputValue *= -1;
+                }
+
+                inputValue *= (long)Math.Pow(2, bit.BitPosition); // get 2^(BitPosition), multiply by inputValue to make it negative or positive
+
+                _updatingBit = true;
+
+                DecimalValue += inputValue;
+                HexValue = DecimalValue.ToString("X"); // this weird toString returns a number as a string formatted to read as Hex
+
+                _updatingBit = false;
+            }
+        }
+
+        private void UpdateBits()
+        {
+            string binary = Convert.ToString(DecimalValue, 2).PadLeft(64, '0');
+
+            foreach (NibbleViewModel nibble in Nibbles)
             {
-                inputValue *= -1;
+                foreach (BitViewModel bit in nibble.Bits)
+                {
+                    bit.BitValue = binary[binary.Length - bit.BitPosition - 1] == '1';
+                }
             }
-
-            inputValue *= (long)Math.Pow(2, bit.BitPosition); // get 2^(BitPosition), multiply by inputValue to make it negative or positive
-
-            DecimalValue += inputValue;
-            HexValue = DecimalValue.ToString("X"); // this weird toString returns a number as a string formatted to read as Hex
         }
     }
-}
+} 

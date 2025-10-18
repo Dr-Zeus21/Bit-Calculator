@@ -87,7 +87,7 @@
                              PreviewKeyDown="TextBox_PreviewKeyDown"
                              DataObject.Pasting="DecTextBox_Pasting"
                              PreviewMouseDown="TextBox_PreviewMouseDown"
-                             Text="{Binding DecimalValue}"/>
+                             Text="{Binding DecimalValue, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Border>
 
