@@ -69,7 +69,7 @@ namespace BrendensFuntimeApp.ViewModel
 
                     _updatingHex = false;
                 }
-        }
+            }
         }
 
         public CalculatorViewModel()

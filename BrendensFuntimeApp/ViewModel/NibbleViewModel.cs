@@ -56,8 +56,6 @@ namespace BrendensFuntimeApp.core
             }
         }
 
-        public event EventHandler<BitViewModel> BitChanged;
-
         private ObservableCollection<BitViewModel> _bits;
         private byte _startingBitPosition;
         private byte _nibbleValue;
