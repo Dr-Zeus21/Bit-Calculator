@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Input;
 using BrendensFuntimeApp.core;
 using LearningApp1.Core;
@@ -28,14 +29,14 @@ namespace BrendensFuntimeApp.ViewModel
                 _decimalValue = value;
                 OnPropertyChanged();
 
-                if (!_updatingBit && !_updatingHex)
+                if (!_updatingNumbers)
                 {
-                    _updatingDecimal = true;
+                    _updatingNumbers = true;
 
                     HexValue = DecimalValue.ToString("X");
                     UpdateBits();
 
-                    _updatingDecimal = false;
+                    _updatingNumbers = false;
                 }
             }
         }
@@ -48,9 +49,9 @@ namespace BrendensFuntimeApp.ViewModel
                 _hexValue = value;
                 OnPropertyChanged();
 
-                if (!_updatingBit && !_updatingDecimal && _hexValue.Length != 0)
+                if (!_updatingNumbers && _hexValue.Length != 0)
                 {
-                    _updatingHex = true;
+                    _updatingNumbers = true;
 
                     // Have to get a little funky to convert to signed decimal
                     ulong unsignedValue = Convert.ToUInt64(_hexValue, 16);
@@ -67,7 +68,7 @@ namespace BrendensFuntimeApp.ViewModel
 
                     UpdateBits();
 
-                    _updatingHex = false;
+                    _updatingNumbers = false;
                 }
             }
         }
@@ -93,9 +94,7 @@ namespace BrendensFuntimeApp.ViewModel
         private string _hexValue = "0";
 
         // block execution of other input while using one type of input
-        private bool _updatingBit = false;
-        private bool _updatingDecimal = false;
-        private bool _updatingHex = false;
+        private bool _updatingNumbers = false;
 
         private void Bit_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -108,7 +107,7 @@ namespace BrendensFuntimeApp.ViewModel
 
         private void UpdateOutputs(BitViewModel bit)
         {
-            if (!_updatingDecimal && !_updatingHex)
+            if (!_updatingNumbers)
             {
                 long inputValue = 1;
 
@@ -126,12 +125,12 @@ namespace BrendensFuntimeApp.ViewModel
 
                 inputValue *= (long)Math.Pow(2, bit.BitPosition); // get 2^(BitPosition), multiply by inputValue to make it negative or positive
 
-                _updatingBit = true;
+                _updatingNumbers = true;
 
                 DecimalValue += inputValue;
                 HexValue = DecimalValue.ToString("X"); // this weird toString returns a number as a string formatted to read as Hex
 
-                _updatingBit = false;
+                _updatingNumbers = false;
             }
         }
 

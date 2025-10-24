@@ -1,11 +1,6 @@
-﻿
-using System.Windows.Controls;
-using System.Windows;
-using BrendensFuntimeApp.ViewModel;
+﻿using BrendensFuntimeApp.ViewModel;
 using LearningApp1.Core;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System;
 
 namespace BrendensFuntimeApp.core
 {
